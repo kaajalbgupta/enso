@@ -417,6 +417,10 @@ class Device {
    */
   uint32_t GetTxHead() noexcept;
 
+  inline RxTxPipe* GetRxTxPipe(int pipe_id) {
+    return rx_tx_pipes_map_[pipe_id];
+  }
+
  private:
   struct TxPendingRequest {
     int pipe_id;

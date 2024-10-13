@@ -373,10 +373,14 @@ __get_new_tails(struct NotificationBufPair* notification_buf_pair,
     struct RxNotification* cur_notification =
         notification_buf + notification_buf_head;
 
-    // Check if the next notification was updated by the NIC.
+    /* Check if the next notification was updated by the NIC. */
     if (!cur_notification->signal) {
       break;
     }
+
+    if (update_callback_)
+      std::invoke(update_callback_, (uint64_t)cur_notification->pad[1],
+                  (uint64_t)cur_notification->pad[0]);
 
     enso_pipe_id_t enso_pipe_id = cur_notification->queue_id;
 
