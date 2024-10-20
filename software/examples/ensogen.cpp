@@ -553,7 +553,7 @@ void pcap_pkt_handler(u_char* user, const struct pcap_pkthdr* pkt_hdr,
     cycles = 10 * 3095;
   else if (context->distribution == "bimodal")
     cycles = (bimodal_dist(g) <= 10 ? 55 : 5) * 3095;
-  enso::set_pkt_cycles(pkt_bytes, cycles);
+  enso::set_pkt_cycles(pkt_bytes+42, cycles);
 
   if (nb_flits > context->free_flits) {
     uint8_t* buf;
