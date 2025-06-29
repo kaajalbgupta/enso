@@ -148,15 +148,16 @@ int main(int argc, char** argv) {
 
   for (uint32_t i = 0; i < request_rates.size(); i++) {
     /* Create a packet transmit schedule based on a Poisson arrival rate. */
-    uint32_t rate = request_rates[i];
+    uint32_t rate_in_pps = request_rates[i];
     std::vector<double> poisson_schedule(rate);
-    std::exponential_distribution<double> rd(1.0 / (1000000.0 / rate));
+    /* Taking [rate_in_pps/1_000_000] to model the packets per us */
+    std::exponential_distribution<double> rd(1.0 / (1000000.0 / rate_in_pps));
     std::generate(poisson_schedule.begin(), poisson_schedule.end(),
                   std::bind(rd, g));
 
-    int packets_per_dst = rate / nb_dst;
+    int packets_per_dst = rate_in_pps / nb_dst;
 
-    /* Create an order for packets for each destination to arrive in*/
+    /* Create an order for packets for each destination to arrive in */
     std::vector<int> packet_order;
     for (int i = 0; i < nb_dst; ++i) {
       for (int j = 0; j < packets_per_dst; ++j) {
@@ -167,7 +168,7 @@ int main(int argc, char** argv) {
 
     double nb_pkts = 0;
 
-    while (nb_pkts < rate) {
+    while (nb_pkts < rate_in_pps) {
       int i = packet_order[nb_pkts];
       l3_hdr->daddr = htonl(dst_ip + (uint32_t)i);
       uint32_t src_offset = i / (nb_dst / nb_src);
